@@ -1,0 +1,22 @@
+dataset/
+dataset.zip
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Virtual environments
+venv/
+.env
+*.env
+
+# Logs
+*.log
+
+# IDE files
+.vscode/
+.idea/
