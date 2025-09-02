@@ -1,19 +1,3 @@
-Your draft README looks really good ✅ — it’s simple, clear, and even a non-technical reader will understand the project.
-
-Here are a few **improvements to make it more polished and professional**:
-
-### 🔧 Issues to fix:
-
-1. **Project structure block** → should be in code formatting (triple backticks) for neatness.
-2. **"Getting Started"** → your code block isn’t closed properly, so everything below is shown as code.
-3. **Headings (Who can use this?, Deployment)** → should be proper markdown sections, not inline text.
-4. **Consistency** → Keep spacing uniform between sections.
-
----
-
-### ✅ Refined README (Copy-Paste Ready)
-
-```markdown
 # 🚦 Traffic Sign Detective  
 
 An easy-to-use project that can **recognize traffic signs** using Machine Learning.  
@@ -108,22 +92,3 @@ Now open the frontend in your browser → upload a traffic sign image → see th
 * **Frontend:** Host on **Netlify / Vercel**
 * **Backend:** Deploy on **Heroku / Render**
 * Make sure to update API URLs in the frontend before deploying.
-
----
-
-## 📜 License
-
-Licensed under the **MIT License** – free to use, learn, and build on.
-
----
-
-⭐ If you like this project, consider giving it a **star** on GitHub!
-
-```
-
----
-
-👉 This version fixes the markdown issues, improves readability, and keeps it professional while still simple for non-technical readers.  
-
-Do you also want me to **add shields.io badges (Build, License, Stars, Tech Stack)** at the top? That gives repos a very professional look.
-```
