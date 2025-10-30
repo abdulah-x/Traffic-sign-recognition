@@ -66,7 +66,7 @@ classes = {
 }
 
 # Path to model
-MODEL_PATH = Path(r"E:\VIP\ML Stuff\ML Practice project\Sign-Recognition\backend\model\traffic_sign_model.h5")
+MODEL_PATH = Path(__file__).parent / "model" / "traffic_sign_model.keras"
 model = None
 
 @app.on_event("startup")

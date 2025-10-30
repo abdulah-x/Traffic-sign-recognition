@@ -36,7 +36,7 @@ export default function Home() {
       const formData = new FormData()
       formData.append("file", selectedFile)
 
-      const response = await axios.post("http://localhost:8000/predict", formData, {
+      const response = await axios.post("http://localhost:8001/predict", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -45,10 +45,8 @@ export default function Home() {
       const endTime = Date.now()
       const timeTaken = (endTime - startTime) / 1000
 
-      setPrediction(response.data.prediction)
       setPrediction(response.data.label)  
-      setConfidence(response.data.confidence)  
-      setConfidence(response.data.confidence || Math.random() * 0.3 + 0.7)
+      setConfidence(response.data.confidence)
       setProcessingTime(timeTaken)
       setTotalPredictions((prev) => prev + 1)
     } catch (err) {
