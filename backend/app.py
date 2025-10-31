@@ -76,7 +76,7 @@ classes = {
 }
 
 # Configuration from environment variables
-MODEL_PATH = Path(os.getenv("MODEL_PATH", str(Path(__file__).parent / "model" / "traffic_sign_model.h5")))
+MODEL_PATH = Path(os.getenv("MODEL_PATH", str(Path(__file__).parent.parent / "traffic_sign_model.h5")))
 MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", "10485760"))  # 10MB default
 ALLOWED_EXTENSIONS = set(os.getenv("ALLOWED_EXTENSIONS", "png,jpg,jpeg,webp").split(","))
 
