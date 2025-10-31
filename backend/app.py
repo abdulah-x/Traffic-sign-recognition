@@ -17,6 +17,7 @@ from slowapi.errors import RateLimitExceeded
 import logging
 import mimetypes
 import hashlib
+from contextlib import asynccontextmanager
 
 # Load environment variables
 load_dotenv()
@@ -27,20 +28,6 @@ logger = logging.getLogger(__name__)
 
 # Initialize rate limiter
 limiter = Limiter(key_func=get_remote_address)
-
-app = FastAPI(title="Traffic Sign Recognition API")
-app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
-
-# Configure CORS
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 classes = {
     0: "Speed limit (20km/h)",
@@ -89,15 +76,15 @@ classes = {
 }
 
 # Configuration from environment variables
-MODEL_PATH = Path(os.getenv("MODEL_PATH", str(Path(__file__).parent / "model" / "traffic_sign_model.keras")))
+MODEL_PATH = Path(os.getenv("MODEL_PATH", str(Path(__file__).parent / "model" / "traffic_sign_model.h5")))
 MAX_FILE_SIZE = int(os.getenv("MAX_FILE_SIZE", "10485760"))  # 10MB default
 ALLOWED_EXTENSIONS = set(os.getenv("ALLOWED_EXTENSIONS", "png,jpg,jpeg,webp").split(","))
 
 model = None
 model_error = None
 
-@app.on_event("startup")
-def load_model_on_startup():
+def load_ml_model():
+    """Load the machine learning model at startup."""
     global model, model_error
     try:
         if not MODEL_PATH.exists():
@@ -112,7 +99,29 @@ def load_model_on_startup():
     except Exception as e:
         model_error = f"Model loading failed: {str(e)}"
         print(f"❌ {model_error}")
-        print("💡 Suggestion: Run 'python retrain_model.py' to fix compatibility issues")
+        print("💡 Suggestion: Check model file format or path")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    load_ml_model()
+    yield
+    # Shutdown - nothing to cleanup
+
+# Create FastAPI app with lifespan
+app = FastAPI(title="Traffic Sign Recognition API", lifespan=lifespan)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Configure CORS
+cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=cors_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def preprocess_image(image: Image.Image):
     """Preprocess image the same way as in testing code (resize + np.array, no normalization)."""

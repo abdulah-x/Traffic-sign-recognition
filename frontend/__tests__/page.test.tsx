@@ -13,20 +13,27 @@ jest.mock('process', () => ({
 describe('Home Page', () => {
   it('renders the main heading', () => {
     render(<Home />)
-    const heading = screen.getByRole('heading', { level: 1 })
-    expect(heading).toBeInTheDocument()
-    expect(heading).toHaveTextContent('Traffic Sign Recognition')
+    const trafficSignText = screen.getByText('Traffic Sign')
+    const detectiveText = screen.getByText('Detective 🕵️')
+    expect(trafficSignText).toBeInTheDocument()
+    expect(detectiveText).toBeInTheDocument()
   })
 
   it('renders the upload section', () => {
     render(<Home />)
-    const uploadText = screen.getByText(/Select an image to classify/i)
+    const uploadText = screen.getByText(/Drop your traffic sign here/i)
     expect(uploadText).toBeInTheDocument()
   })
 
-  it('renders the upload button', () => {
+  it('renders the upload instruction', () => {
     render(<Home />)
-    const uploadButton = screen.getByText(/Choose Image/i)
-    expect(uploadButton).toBeInTheDocument()
+    const uploadInstruction = screen.getByText(/or click to browse your files/i)
+    expect(uploadInstruction).toBeInTheDocument()
+  })
+
+  it('renders file format information', () => {
+    render(<Home />)
+    const formatInfo = screen.getByText(/PNG, JPG, JPEG/i)
+    expect(formatInfo).toBeInTheDocument()
   })
 })
