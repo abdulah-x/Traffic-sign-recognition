@@ -36,7 +36,7 @@ export default function Home() {
       const formData = new FormData()
       formData.append("file", selectedFile)
 
-      const response = await axios.post("http://localhost:8001/predict", formData, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/predict`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
