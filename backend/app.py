@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request, HTTPException
 from fastapi.responses import JSONResponse
 from tensorflow.keras.models import load_model
 from PIL import Image
@@ -11,11 +11,26 @@ import os
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+import logging
+import mimetypes
+import hashlib
 
 # Load environment variables
 load_dotenv()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Initialize rate limiter
+limiter = Limiter(key_func=get_remote_address)
+
 app = FastAPI(title="Traffic Sign Recognition API")
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure CORS
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
@@ -106,6 +121,53 @@ def preprocess_image(image: Image.Image):
     arr = np.expand_dims(arr, axis=0)   # shape (1,30,30,3)
     return arr
 
+def validate_file_security(file: UploadFile) -> tuple[bool, str]:
+    """Enhanced security validation for uploaded files."""
+    try:
+        # Check file size
+        if hasattr(file, 'size') and file.size and file.size > MAX_FILE_SIZE:
+            return False, f"File too large. Max size: {MAX_FILE_SIZE/1024/1024:.1f}MB"
+        
+        # Validate MIME type
+        if file.content_type and not file.content_type.startswith('image/'):
+            return False, f"Invalid content type: {file.content_type}. Only images allowed."
+        
+        # Check file extension
+        if file.filename:
+            extension = Path(file.filename).suffix.lower().lstrip('.')
+            if extension not in ALLOWED_EXTENSIONS:
+                return False, f"Invalid file extension: .{extension}. Allowed: {', '.join(ALLOWED_EXTENSIONS)}"
+        
+        # Validate file signature (magic bytes) for common image formats
+        file_content = file.file.read(32)  # Read first 32 bytes
+        file.file.seek(0)  # Reset file pointer
+        
+        # Check magic bytes for image formats
+        image_signatures = {
+            b'\x89PNG\r\n\x1a\n': 'PNG',
+            b'\xff\xd8\xff': 'JPEG',
+            b'RIFF': 'WEBP'
+        }
+        
+        is_valid_image = False
+        for signature in image_signatures:
+            if file_content.startswith(signature):
+                is_valid_image = True
+                break
+        
+        if not is_valid_image:
+            return False, "Invalid image file format or corrupted file"
+        
+        return True, "File validation passed"
+        
+    except Exception as e:
+        logger.error(f"File validation error: {e}")
+        return False, f"File validation failed: {str(e)}"
+
+def calculate_file_hash(file_content: bytes) -> str:
+    """Calculate SHA256 hash of file content for caching/deduplication."""
+    return hashlib.sha256(file_content).hexdigest()
+
 @app.get("/")
 async def root():
     return {"message": "Traffic Sign Recognition API", "version": "1.0.0"}
@@ -140,7 +202,9 @@ def validate_file(file: UploadFile) -> tuple[bool, str]:
     return True, "Valid file"
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
+@limiter.limit("10/minute")  # Rate limiting: 10 requests per minute
+async def predict(request: Request, file: UploadFile = File(...)):
+    start_time = datetime.now().timestamp()
     try:
         if model is None:
             return JSONResponse(
@@ -148,16 +212,20 @@ async def predict(file: UploadFile = File(...)):
                 status_code=503
             )
 
-        # Validate file
-        is_valid, validation_message = validate_file(file)
+        # Enhanced security validation
+        is_valid, validation_message = validate_file_security(file)
         if not is_valid:
+            logger.warning(f"File validation failed: {validation_message}")
             return JSONResponse(
-                {"error": "Invalid file", "details": validation_message}, 
+                {"error": "File validation failed", "details": validation_message}, 
                 status_code=400
             )
 
-        # Read and validate file size
+        # Read file content
         file_content = await file.read()
+        file_hash = calculate_file_hash(file_content)
+        
+        # Additional size check after reading
         if len(file_content) > MAX_FILE_SIZE:
             return JSONResponse(
                 {"error": "File too large", "details": f"Maximum size is {MAX_FILE_SIZE // 1024 // 1024}MB"}, 
@@ -187,10 +255,15 @@ async def predict(file: UploadFile = File(...)):
         class_index = int(np.argmax(preds))
         confidence = float(np.max(preds))
 
+        # Log successful prediction
+        logger.info(f"Prediction successful: class={class_index}, confidence={confidence:.4f}, hash={file_hash[:8]}")
+
         return JSONResponse({
             "class_id": class_index,
             "label": classes.get(class_index, "unknown"),
-            "confidence": round(confidence, 4)
+            "confidence": round(confidence, 4),
+            "processing_time_ms": round((datetime.now().timestamp() - start_time) * 1000, 2),
+            "file_hash": file_hash[:8]  # Short hash for tracking
         })
 
     except Exception as e:
