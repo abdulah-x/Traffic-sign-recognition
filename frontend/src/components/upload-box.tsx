@@ -2,7 +2,8 @@
 
 import type React from "react"
 import { useCallback, useState } from "react"
-import { Upload, ImageIcon, Camera, Sparkles } from "lucide-react"
+import { Upload, ImageIcon, Camera, Sparkles, FileImage } from "lucide-react"
+import ImagePreview from './ui/ImagePreview'
 
 interface UploadBoxProps {
   onFileSelect: (file: File) => void
@@ -59,15 +60,11 @@ export default function UploadBox({ onFileSelect, previewUrl, disabled }: Upload
     <div className="bg-[#1E293B]/95 backdrop-blur-sm rounded-3xl shadow-2xl p-8 border-2 border-[#FACC15]/30">
       {previewUrl ? (
         <div className="text-center">
-          <div className="relative inline-block group">
-            <img
-              src={previewUrl || "/placeholder.svg"}
-              alt="Preview"
-              className="max-w-full max-h-80 rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#FACC15]/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <Sparkles className="absolute top-4 right-4 w-8 h-8 text-[#FACC15] animate-pulse" />
-          </div>
+          <ImagePreview 
+            src={previewUrl} 
+            alt="Uploaded traffic sign" 
+            className="max-w-full mx-auto"
+          />
           <div className="mt-6 flex items-center justify-center space-x-2">
             <div className="w-3 h-3 bg-[#FACC15] rounded-full animate-pulse"></div>
             <p className="text-lg font-bold text-[#F8FAFC]">Ready for AI Analysis! 🚀</p>

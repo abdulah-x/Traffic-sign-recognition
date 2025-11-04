@@ -1,6 +1,7 @@
 "use client"
 
 import { CheckCircle, RotateCcw, Trophy, Target, Zap, Clock } from "lucide-react"
+import ConfidenceBar from './ui/ConfidenceBar'
 
 interface ResultCardProps {
   prediction: string
@@ -75,24 +76,7 @@ export default function ResultCard({ prediction, confidence, processingTime, onR
             </div>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex justify-between text-sm font-medium text-[#94A3B8]">
-              <span>AI Confidence Level</span>
-              <span>{confidencePercentage}%</span>
-            </div>
-            <div className="w-full bg-[#0F172A] rounded-full h-3 overflow-hidden border border-[#FACC15]/30">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ease-out ${
-                  confidencePercentage >= 90
-                    ? "bg-[#22C55E]"
-                    : confidencePercentage >= 75
-                      ? "bg-[#FACC15]"
-                      : "bg-[#EF4444]"
-                }`}
-                style={{ width: `${confidencePercentage}%` }}
-              ></div>
-            </div>
-          </div>
+          <ConfidenceBar confidence={confidence || 0.95} className="mt-4" />
         </div>
 
         <button

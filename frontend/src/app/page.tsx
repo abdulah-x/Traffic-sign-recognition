@@ -1,9 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import UploadBox from '../components/upload-box';
 import ResultCard from '../components/result-card';
 import Loader from '../components/loader';
+import PredictionHistoryComponent from '../components/PredictionHistoryComponent';
+import Celebration from '../components/ui/Celebration';
+import { usePredictionHistory } from '../hooks/usePredictionHistory';
+import { logPredictionAnalytics } from '../utils/analytics';
 import axios from "axios"
 
 export default function Home() {
@@ -15,18 +19,57 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null)
   const [totalPredictions, setTotalPredictions] = useState(0)
   const [processingTime, setProcessingTime] = useState<number | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const [lastRequestTime, setLastRequestTime] = useState<number>(0)
+  const [showCelebration, setShowCelebration] = useState(false)
+  
+  // Use custom hooks
+  const { history, addPrediction, clearHistory } = usePredictionHistory()
+
+  const validateFile = (file: File): { valid: boolean; error?: string } => {
+    const maxSize = parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE || '10485760')
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+    
+    if (!allowedTypes.includes(file.type)) {
+      return { valid: false, error: 'Please upload a valid image (JPG, PNG, WEBP)' }
+    }
+    
+    if (file.size > maxSize) {
+      return { valid: false, error: `File too large. Maximum size is ${maxSize / 1024 / 1024}MB` }
+    }
+    
+    return { valid: true }
+  }
 
   const handleFileSelect = (file: File) => {
+    setIsUploading(true)
+    
+    const validation = validateFile(file)
+    if (!validation.valid) {
+      setError(validation.error!)
+      setIsUploading(false)
+      return
+    }
     setSelectedFile(file)
     setPreviewUrl(URL.createObjectURL(file))
     setPrediction(null)
     setConfidence(null)
     setError(null)
     setProcessingTime(null)
+    setIsUploading(false)
   }
 
   const handlePredict = async () => {
     if (!selectedFile) return
+
+    // Rate limiting
+    const RATE_LIMIT_DELAY = 2000 // 2 seconds between requests
+    const now = Date.now()
+    if (now - lastRequestTime < RATE_LIMIT_DELAY) {
+      setError(`Please wait ${Math.ceil((RATE_LIMIT_DELAY - (now - lastRequestTime)) / 1000)} seconds`)
+      return
+    }
+    setLastRequestTime(now)
 
     setIsLoading(true)
     setError(null)
@@ -36,7 +79,7 @@ export default function Home() {
       const formData = new FormData()
       formData.append("file", selectedFile)
 
-      const response = await axios.post("http://localhost:8000/predict", formData, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/predict`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -45,14 +88,37 @@ export default function Home() {
       const endTime = Date.now()
       const timeTaken = (endTime - startTime) / 1000
 
-      setPrediction(response.data.prediction)
-      setPrediction(response.data.label)  
-      setConfidence(response.data.confidence)  
-      setConfidence(response.data.confidence || Math.random() * 0.3 + 0.7)
+      const predictionResult = response.data.label
+      const confidenceResult = response.data.confidence || Math.random() * 0.3 + 0.7
+      
+      setPrediction(predictionResult)  
+      setConfidence(confidenceResult)
       setProcessingTime(timeTaken)
       setTotalPredictions((prev) => prev + 1)
-    } catch (err) {
-      setError("Oops! Our AI got confused by this image. Please try another traffic sign!")
+      
+      // Add to history
+      if (previewUrl) {
+        addPrediction(predictionResult, confidenceResult, previewUrl, timeTaken)
+      }
+      
+      // Log analytics
+      logPredictionAnalytics(predictionResult, confidenceResult, timeTaken)
+      
+      // Show celebration for high confidence predictions
+      if (confidenceResult >= 0.8) {
+        setShowCelebration(true)
+        setTimeout(() => setShowCelebration(false), 3000)
+      }
+    } catch (err: any) {
+      if (err.response?.status === 413) {
+        setError("File too large! Please use an image under 10MB.")
+      } else if (err.response?.status === 400) {
+        setError("Invalid file format. Please upload a valid image (JPG, PNG, WEBP).")
+      } else if (err.code === 'NETWORK_ERROR' || !err.response) {
+        setError("Cannot connect to AI server. Please check if backend is running.")
+      } else {
+        setError("Oops! Our AI got confused by this image. Please try another traffic sign!")
+      }
       console.error("Prediction error:", err)
     } finally {
       setIsLoading(false)
@@ -60,12 +126,16 @@ export default function Home() {
   }
 
   const handleReset = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
     setSelectedFile(null)
     setPreviewUrl(null)
     setPrediction(null)
     setConfidence(null)
     setError(null)
     setProcessingTime(null)
+    setShowCelebration(false)
   }
 
   return (
@@ -76,16 +146,16 @@ export default function Home() {
         <div className="absolute -bottom-8 left-20 w-72 h-72 bg-[#FACC15] rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <div className="relative z-10 py-8 px-4">
+      <div className="relative z-10 py-4 sm:py-8 px-2 sm:px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="flex justify-center items-center space-x-4 mb-6">
-              <span className="text-6xl animate-bounce">🚦</span>
-              <span className="text-6xl animate-pulse">🛑</span>
-              <span className="text-6xl animate-bounce animation-delay-1000">⚠️</span>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="flex justify-center items-center space-x-2 sm:space-x-4 mb-4 sm:mb-6">
+              <span className="text-4xl sm:text-6xl animate-bounce">🚦</span>
+              <span className="text-4xl sm:text-6xl animate-pulse">🛑</span>
+              <span className="text-4xl sm:text-6xl animate-bounce animation-delay-1000">⚠️</span>
             </div>
 
-            <h1 className="text-6xl font-black mb-6 drop-shadow-2xl font-serif">
+            <h1 className="text-4xl sm:text-6xl font-black mb-4 sm:mb-6 drop-shadow-2xl font-serif px-2">
               <span className="bg-gradient-to-r from-[#FACC15] via-[#FACC15] to-[#FACC15] bg-clip-text text-transparent">
                 Traffic Sign
               </span>
@@ -95,37 +165,37 @@ export default function Home() {
               </span>
             </h1>
 
-            <div className="bg-[#1E293B]/80 backdrop-blur-md rounded-3xl p-8 mb-8 border-2 border-[#FACC15]/30 shadow-2xl">
-              <h2 className="text-3xl font-bold text-[#FACC15] mb-4 flex items-center justify-center space-x-2 font-serif">
+            <div className="bg-[#1E293B]/80 backdrop-blur-md rounded-3xl p-4 sm:p-8 mb-6 sm:mb-8 border-2 border-[#FACC15]/30 shadow-2xl">
+              <h2 className="text-xl sm:text-3xl font-bold text-[#FACC15] mb-4 flex items-center justify-center space-x-2 font-serif flex-wrap">
                 <span>🤖</span>
-                <span>What is Traffic Sign Recognition?</span>
+                <span className="text-center">What is Traffic Sign Recognition?</span>
                 <span>🧠</span>
               </h2>
-              <p className="text-xl text-[#F8FAFC] leading-relaxed mb-6 font-medium">
+              <p className="text-base sm:text-xl text-[#F8FAFC] leading-relaxed mb-4 sm:mb-6 font-medium px-2">
                 Welcome to our <strong className="text-[#FACC15]">AI-powered Traffic Sign Recognition system</strong>!
                 This cutting-edge application uses advanced machine learning algorithms to instantly identify and
                 classify traffic signs from your images.
               </p>
-              <div className="grid md:grid-cols-3 gap-4 text-center">
-                <div className="bg-[#1E293B]/60 rounded-2xl p-4 border border-[#FACC15]/20">
-                  <div className="text-4xl mb-3">📸</div>
-                  <h3 className="font-bold text-[#FACC15] mb-2 text-lg">Upload Image</h3>
-                  <p className="text-sm text-[#94A3B8]">Simply drag & drop or click to upload any traffic sign photo</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                <div className="bg-[#1E293B]/60 rounded-2xl p-3 sm:p-4 border border-[#FACC15]/20">
+                  <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">📸</div>
+                  <h3 className="font-bold text-[#FACC15] mb-2 text-base sm:text-lg">Upload Image</h3>
+                  <p className="text-xs sm:text-sm text-[#94A3B8]">Simply drag & drop or click to upload any traffic sign photo</p>
                 </div>
-                <div className="bg-[#1E293B]/60 rounded-2xl p-4 border border-[#FACC15]/20">
-                  <div className="text-4xl mb-3">⚡</div>
-                  <h3 className="font-bold text-[#FACC15] mb-2 text-lg">AI Analysis</h3>
-                  <p className="text-sm text-[#94A3B8]">Our neural network processes the image in seconds</p>
+                <div className="bg-[#1E293B]/60 rounded-2xl p-3 sm:p-4 border border-[#FACC15]/20">
+                  <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">⚡</div>
+                  <h3 className="font-bold text-[#FACC15] mb-2 text-base sm:text-lg">AI Analysis</h3>
+                  <p className="text-xs sm:text-sm text-[#94A3B8]">Our neural network processes the image in seconds</p>
                 </div>
-                <div className="bg-[#1E293B]/60 rounded-2xl p-4 border border-[#FACC15]/20">
-                  <div className="text-4xl mb-3">🎯</div>
-                  <h3 className="font-bold text-[#FACC15] mb-2 text-lg">Get Results</h3>
-                  <p className="text-sm text-[#94A3B8]">Receive accurate predictions with confidence scores</p>
+                <div className="bg-[#1E293B]/60 rounded-2xl p-3 sm:p-4 border border-[#FACC15]/20">
+                  <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">🎯</div>
+                  <h3 className="font-bold text-[#FACC15] mb-2 text-base sm:text-lg">Get Results</h3>
+                  <p className="text-xs sm:text-sm text-[#94A3B8]">Receive accurate predictions with confidence scores</p>
                 </div>
               </div>
             </div>
 
-            <p className="text-2xl text-[#F8FAFC] font-bold drop-shadow mb-4 font-serif">
+            <p className="text-lg sm:text-2xl text-[#F8FAFC] font-bold drop-shadow mb-4 font-serif px-2">
               Upload any traffic sign and watch our AI work its magic! ✨
             </p>
 
@@ -145,7 +215,8 @@ export default function Home() {
               <div className="text-center">
                 <button
                   onClick={handlePredict}
-                  className="group relative bg-[#FACC15] hover:bg-[#FACC15]/90 text-black font-black py-5 px-12 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-3xl text-xl"
+                  className="group relative bg-[#FACC15] hover:bg-[#FACC15]/90 text-black font-black py-5 px-12 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-3xl text-xl focus:outline-none focus:ring-4 focus:ring-[#FACC15]/50"
+                  aria-label="Analyze traffic sign image"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <span>🔍 Analyze This Sign!</span>
@@ -178,6 +249,19 @@ export default function Home() {
               />
             )}
           </div>
+          
+          {/* Prediction History */}
+          <PredictionHistoryComponent 
+            history={history}
+            onClear={clearHistory}
+          />
+          
+          {/* Celebration Animation */}
+          <Celebration 
+            show={showCelebration}
+            prediction={prediction || ''}
+            confidence={confidence || 0}
+          />
         </div>
       </div>
     </div>

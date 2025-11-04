@@ -1,0 +1,95 @@
+# Dependencies
+**/node_modules/
+package-lock.json
+yarn.lock
+
+# Next.js build output
+**/.next/
+**/out/
+**/.swc/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+**/__pycache__/
+.pytest_cache/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Build directories
+build/
+dist/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Development and Training Files (not needed in production)
+dataset/
+dataset.zip
+training/
+test_images/
+tests/
+convert_model.py
+model_version_check.py
+test.py
+training.ipynb
+
+# Test coverage
+.nyc_output
+htmlcov/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Docker
+.dockerignore
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/

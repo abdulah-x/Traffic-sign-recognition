@@ -1,15 +1,41 @@
 {
-  "short_name": "Traffic Sign",
   "name": "Traffic Sign Detective",
+  "short_name": "SignDetect",
+  "description": "AI-powered traffic sign recognition using machine learning",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#FACC15",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["utilities", "productivity", "education"],
   "icons": [
     {
-      "src": "favicon.png",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/png"
+      "src": "/icon.svg",
+      "sizes": "32x32 16x16",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32",
+      "type": "image/x-icon",
+      "purpose": "any"
     }
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "shortcuts": [
+    {
+      "name": "Quick Analyze",
+      "short_name": "Analyze", 
+      "description": "Quickly analyze a traffic sign",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icon.svg",
+          "sizes": "32x32"
+        }
+      ]
+    }
+  ]
 }
