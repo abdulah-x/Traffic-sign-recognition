@@ -9,6 +9,8 @@
 
 **NeuraLens** is a production-ready AI visual recognition system featuring a modern Next.js frontend and FastAPI backend. Upload images and get instant AI predictions with confidence scores using advanced TensorFlow machine learning models.
 
+Note: While using this App keep in mind that you have to upload image according to input of the model. Also, I am attaching a *folder of test iamges* for testing!! 
+
 ## ✨ Features
 
 ### 🎯 **Core Functionality**
