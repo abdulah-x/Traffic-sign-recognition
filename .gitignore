@@ -93,3 +93,6 @@ venv/
 .venv/
 env/
 ENV/
+
+# Vercel
+.vercel/

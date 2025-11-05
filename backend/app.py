@@ -109,5 +109,8 @@ async def predict(file: UploadFile = File(...)):
         print(tb)
         return JSONResponse({"error": str(e), "trace": tb}, status_code=500)
 
+# For Vercel deployment
+handler = app
+
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=False)
