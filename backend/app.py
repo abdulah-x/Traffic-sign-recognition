@@ -13,9 +13,13 @@ app = FastAPI(title="NeuraLens API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],   # for testing, later restrict to your frontend domain
+    allow_origins=[
+        "http://localhost:3000",  # Local development
+        "https://*.vercel.app",   # Vercel deployments
+        "https://neuralens.vercel.app"  # Your specific domain
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -65,15 +69,20 @@ classes = {
     42: "End of no passing by vehicles over 3.5 metric tons"
 }
 
-# Path to model
-MODEL_PATH = Path(r"E:\VIP\ML Stuff\ML Practice project\Sign-Recognition\backend\model\traffic_sign_model.h5")
+# Path to model - works for both local and Vercel deployment
+MODEL_PATH = Path(__file__).parent / "model" / "traffic_sign_model.h5"
 model = None
 
 @app.on_event("startup")
 def load_model_on_startup():
     global model
     if not MODEL_PATH.exists():
-        raise FileNotFoundError(f"Model file not found: {MODEL_PATH}")
+        # Try alternative path for Vercel
+        alt_path = Path(__file__).parent / "model" / "traffic_sign_model.keras"
+        if alt_path.exists():
+            MODEL_PATH = alt_path
+        else:
+            raise FileNotFoundError(f"Model file not found: {MODEL_PATH}")
     model = load_model(str(MODEL_PATH))
     print("✅ Model loaded:", MODEL_PATH, " — input_shape:", getattr(model, "input_shape", None))
 
