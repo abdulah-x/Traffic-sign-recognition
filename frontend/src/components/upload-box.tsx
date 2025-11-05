@@ -62,7 +62,7 @@ export default function UploadBox({ onFileSelect, previewUrl, disabled }: Upload
         <div className="text-center">
           <ImagePreview 
             src={previewUrl} 
-            alt="Uploaded traffic sign" 
+            alt="Uploaded image for analysis" 
             className="max-w-full mx-auto"
           />
           <div className="mt-6 flex items-center justify-center space-x-2">
@@ -105,7 +105,7 @@ export default function UploadBox({ onFileSelect, previewUrl, disabled }: Upload
 
               <div className="space-y-3">
                 <p className="text-2xl font-bold text-[#FACC15] font-serif">
-                  {isDragOver ? "Drop it like it's hot! 🔥" : "Drop your traffic sign here"}
+                  {isDragOver ? "Drop it like it's hot! 🔥" : "Drop your image here for AI analysis"}
                 </p>
                 <p className="text-lg text-[#F8FAFC] font-medium">or click to browse your files</p>
               </div>

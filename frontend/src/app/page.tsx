@@ -117,7 +117,7 @@ export default function Home() {
       } else if (err.code === 'NETWORK_ERROR' || !err.response) {
         setError("Cannot connect to AI server. Please check if backend is running.")
       } else {
-        setError("Oops! Our AI got confused by this image. Please try another traffic sign!")
+        setError("Oops! NeuraLens couldn't analyze this image. Please try another image!")
       }
       console.error("Prediction error:", err)
     } finally {
@@ -156,31 +156,31 @@ export default function Home() {
             </div>
 
             <h1 className="text-4xl sm:text-6xl font-black mb-4 sm:mb-6 drop-shadow-2xl font-serif px-2">
-              <span className="bg-gradient-to-r from-[#FACC15] via-[#FACC15] to-[#FACC15] bg-clip-text text-transparent">
-                Traffic Sign
+              <span className="bg-gradient-to-r from-[#667eea] via-[#764ba2] to-[#f093fb] bg-clip-text text-transparent">
+                NeuraLens
               </span>
               <br />
               <span className="bg-gradient-to-r from-[#FACC15] via-[#FACC15] to-[#FACC15] bg-clip-text text-transparent">
-                Detective 🕵️
+                AI Vision �
               </span>
             </h1>
 
             <div className="bg-[#1E293B]/80 backdrop-blur-md rounded-3xl p-4 sm:p-8 mb-6 sm:mb-8 border-2 border-[#FACC15]/30 shadow-2xl">
               <h2 className="text-xl sm:text-3xl font-bold text-[#FACC15] mb-4 flex items-center justify-center space-x-2 font-serif flex-wrap">
                 <span>🤖</span>
-                <span className="text-center">What is Traffic Sign Recognition?</span>
+                <span className="text-center">What is NeuraLens?</span>
                 <span>🧠</span>
               </h2>
               <p className="text-base sm:text-xl text-[#F8FAFC] leading-relaxed mb-4 sm:mb-6 font-medium px-2">
-                Welcome to our <strong className="text-[#FACC15]">AI-powered Traffic Sign Recognition system</strong>!
+                Welcome to <strong className="text-[#FACC15]">NeuraLens</strong> - our AI-powered visual recognition system!
                 This cutting-edge application uses advanced machine learning algorithms to instantly identify and
-                classify traffic signs from your images.
+                classify and analyze visual content from your images.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                 <div className="bg-[#1E293B]/60 rounded-2xl p-3 sm:p-4 border border-[#FACC15]/20">
                   <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">📸</div>
                   <h3 className="font-bold text-[#FACC15] mb-2 text-base sm:text-lg">Upload Image</h3>
-                  <p className="text-xs sm:text-sm text-[#94A3B8]">Simply drag & drop or click to upload any traffic sign photo</p>
+                  <p className="text-xs sm:text-sm text-[#94A3B8]">Simply drag & drop or click to upload any image for AI analysis</p>
                 </div>
                 <div className="bg-[#1E293B]/60 rounded-2xl p-3 sm:p-4 border border-[#FACC15]/20">
                   <div className="text-3xl sm:text-4xl mb-2 sm:mb-3">⚡</div>
@@ -196,7 +196,7 @@ export default function Home() {
             </div>
 
             <p className="text-lg sm:text-2xl text-[#F8FAFC] font-bold drop-shadow mb-4 font-serif px-2">
-              Upload any traffic sign and watch our AI work its magic! ✨
+              Upload any image and watch NeuraLens AI work its magic! ✨
             </p>
 
             {totalPredictions > 0 && (
@@ -216,7 +216,7 @@ export default function Home() {
                 <button
                   onClick={handlePredict}
                   className="group relative bg-[#FACC15] hover:bg-[#FACC15]/90 text-black font-black py-5 px-12 rounded-2xl shadow-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-3xl text-xl focus:outline-none focus:ring-4 focus:ring-[#FACC15]/50"
-                  aria-label="Analyze traffic sign image"
+                  aria-label="Analyze image with NeuraLens AI"
                 >
                   <span className="relative z-10 flex items-center space-x-2">
                     <span>🔍 Analyze This Sign!</span>

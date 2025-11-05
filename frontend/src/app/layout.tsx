@@ -1,8 +1,8 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Traffic Sign Recognition',
-  description: 'Upload and detect traffic signs',
+  title: 'NeuraLens',
+  description: 'AI-powered visual recognition system',
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },

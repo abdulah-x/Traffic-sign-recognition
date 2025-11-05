@@ -9,7 +9,7 @@ from io import BytesIO
 import traceback
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI(title="Traffic Sign Recognition API")
+app = FastAPI(title="NeuraLens API")
 
 app.add_middleware(
     CORSMiddleware,

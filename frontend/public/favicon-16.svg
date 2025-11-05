@@ -1,0 +1,13 @@
+<!-- NeuraLens Favicon -->
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <defs>
+    <linearGradient id="favicon-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+  </defs>
+  <circle cx="8" cy="8" r="7" fill="url(#favicon-bg)"/>
+  <circle cx="8" cy="8" r="3" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="8" cy="8" r="1" fill="#ffffff"/>
+  <text x="8" y="11" font-family="Arial" font-size="6" font-weight="bold" text-anchor="middle" fill="#ffffff">N</text>
+</svg>

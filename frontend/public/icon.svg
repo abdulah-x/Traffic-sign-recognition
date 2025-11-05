@@ -1,13 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ff4444;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#cc0000;stop-opacity:1" />
+    <!-- Neural network gradient -->
+    <linearGradient id="neural-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#764ba2;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
     </linearGradient>
+    <!-- Lens gradient -->
+    <radialGradient id="lens-gradient" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="70%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0.1" />
+    </radialGradient>
   </defs>
-  <!-- Red circular background -->
-  <circle cx="16" cy="16" r="14" fill="url(#bg)" stroke="#ffffff" stroke-width="2"/>
-  <!-- White exclamation mark -->
-  <rect x="14" y="8" width="4" height="10" fill="white" rx="2"/>
-  <circle cx="16" cy="22" r="2" fill="white"/>
+  
+  <!-- Main circular background -->
+  <circle cx="16" cy="16" r="14" fill="url(#neural-bg)" stroke="#ffffff" stroke-width="1.5"/>
+  
+  <!-- Neural network nodes -->
+  <circle cx="8" cy="10" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="24" cy="10" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="8" cy="22" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="24" cy="22" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="16" cy="16" r="2" fill="#ffffff" opacity="0.9"/>
+  
+  <!-- Neural connections -->
+  <line x1="8" y1="10" x2="16" y2="16" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>
+  <line x1="24" y1="10" x2="16" y2="16" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>
+  <line x1="8" y1="22" x2="16" y2="16" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>
+  <line x1="24" y1="22" x2="16" y2="16" stroke="#ffffff" stroke-width="0.8" opacity="0.6"/>
+  
+  <!-- Lens effect overlay -->
+  <circle cx="16" cy="16" r="11" fill="url(#lens-gradient)" opacity="0.4"/>
+  
+  <!-- Central "N" for NeuraLens -->
+  <text x="16" y="19" font-family="Arial, sans-serif" font-size="10" font-weight="bold" text-anchor="middle" fill="#ffffff" opacity="0.9">N</text>
 </svg>

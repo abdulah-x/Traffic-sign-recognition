@@ -1,4 +1,4 @@
-# 🚦 Traffic Sign Recognition App
+# � NeuraLens - AI Visual Recognition
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
@@ -7,7 +7,7 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?logo=fastapi)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-FF6F00?logo=tensorflow&logoColor=white)
 
-A **production-ready AI traffic sign recognition system** featuring a modern Next.js frontend and FastAPI backend. Upload traffic sign images and get instant AI predictions with confidence scores using a trained TensorFlow model.
+**NeuraLens** is a production-ready AI visual recognition system featuring a modern Next.js frontend and FastAPI backend. Upload images and get instant AI predictions with confidence scores using advanced TensorFlow machine learning models.
 
 ## ✨ Features
 
@@ -41,8 +41,8 @@ A **production-ready AI traffic sign recognition system** featuring a modern Nex
 ## 📂 Project Structure
 
 ```
-Traffic-Sign-Recognition/
-├── � backend/                    # FastAPI Python API
+NeuraLens/
+├── 📁 backend/                    # FastAPI Python API
 │   ├── app.py                     # Main FastAPI server
 │   ├── utils.py                   # Helper functions  
 │   ├── model/                     # Trained ML model
@@ -116,7 +116,7 @@ Traffic-Sign-Recognition/
 ### 1️⃣ Clone the repo  
 ```bash
 git clone https://github.com/abdulah-x/Traffic-sign-recognition.git
-cd Traffic-sign-recognition
+cd NeuraLens
 ````
 
 ### 2️⃣ Setup Backend

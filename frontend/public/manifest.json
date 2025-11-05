@@ -1,7 +1,7 @@
 {
-  "name": "Traffic Sign Detective",
-  "short_name": "SignDetect",
-  "description": "AI-powered traffic sign recognition using machine learning",
+  "name": "NeuraLens",
+  "short_name": "NeuraLens",
+  "description": "AI-powered visual recognition system using advanced machine learning",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0F172A",
@@ -28,7 +28,7 @@
     {
       "name": "Quick Analyze",
       "short_name": "Analyze", 
-      "description": "Quickly analyze a traffic sign",
+      "description": "Quickly analyze an image with AI",
       "url": "/",
       "icons": [
         {
