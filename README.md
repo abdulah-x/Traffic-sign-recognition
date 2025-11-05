@@ -9,6 +9,8 @@
 
 **NeuraLens** is a production-ready AI visual recognition system featuring a modern Next.js frontend and FastAPI backend. Upload images and get instant AI predictions with confidence scores using advanced TensorFlow machine learning models.
 
+Note: While using this App keep in mind that you have to upload image according to input of the model. Also, I am attaching a *folder of test iamges* for testing!! 
+
 ## ✨ Features
 
 ### 🎯 **Core Functionality**
@@ -196,6 +198,8 @@ Speed limits (20-120 km/h), Stop, Yield, Warnings, Mandatory signs
 **Model Specs**: TensorFlow 2.17.0 + Keras 3.6.0 | Input: 30x30x3 RGB | Size: 2.97MB
 
 ---
+
+Dataset : [German Traffic Sign Recognition Benchmark](https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign?resource=download)
 
 ## 📄 License
 
