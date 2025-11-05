@@ -207,6 +207,6 @@ MIT License - Feel free to use and contribute!
 
 **⭐ Star this repo if you find it helpful!**
 
-Made with ❤️ by [Abdul](https://github.com/abdulah-x)
+Made with ❤️ by [Abdulllah](https://github.com/abdulah-x)
 
 </div>
